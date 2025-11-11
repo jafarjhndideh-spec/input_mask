@@ -1,48 +1,44 @@
-import { useEffect, useState } from "react";
-import { cities } from "./cities.js"
-import Input from "./main.jsx"
+import { useState } from "react";
+import { cities } from "./cities.js";
+import Input from "./main.jsx";
 
 function App() {
-  const [hint,setHint]=useState("")
-  const [search,setSearch]=useState("")
+  const [hint, setHint] = useState("");
+  const [search, setSearch] = useState("");
 
-  const findCity=cities.find(item=>item.includes(search))
-      
-
-  useEffect(()=>{
-    if(!search){
-      setHint("")
-    }else{
-      setHint(findCity)
+  const handleChange = (e) => {
+    const value = e.target.value;
+    let findCity = null;
+    if (value) {
+      const firstLetter = value[0].toUpperCase();
+      const newSearch = `${firstLetter}${value.slice(1)}`;
+      findCity = cities.find((item) => item.startsWith(newSearch));
+      setSearch(newSearch);
+      setHint(findCity);
+    } else {
+      setSearch("");
+      setHint("");
     }
 
-    if(search){
-      const newSearch=search.split("")
-      newSearch.splice(0,1,search[0].toUpperCase())
-      setSearch(newSearch.join(""))
-    }
-
-    if(search.includes(" ")){
-      const newSearch=search.split(" ").map(item=>{
-        if(item){
-         const newItem=item.split("")
-         newItem.splice(0,1,item[0].toUpperCase())
-         return newItem.join("")
+    if (value.includes(" ")) {
+      const secondLetter = value.split(" ").map((item) => {
+        if (item) {
+          const newItem = item.split("");
+          newItem.splice(0, 1, item[0].toUpperCase());
+          findCity = cities.find((items) => items.includes(newItem.join("")));
+          return newItem.join("");
         }
-      })
-     setSearch(newSearch.join(" "))
+      });
+      setHint(findCity);
+      setSearch(secondLetter.join(" "));
     }
-
-  },[search])
-
- 
-
+  };
 
   return (
     <div>
-      <Input search={search} setSearch={setSearch} hint={hint}/>
+      <Input search={search} handleChange={handleChange} hint={hint} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
